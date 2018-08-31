@@ -8,6 +8,6 @@ function clean-git-repo() {
   local logFile="${logFileWithPrefix}-${transform}-clean-git.log"
 
   msg "Log file [$logFile]"
-  git filter-branch -f --msg-filter 'sed -e"/^git-svn-id:/d"' > $logFile 2>&1 || error "Failed while removing the git-svn-id"
+  git filter-branch -f --msg-filter 'sed -e"/^git-svn-id:/d"' -- --all > $logFile 2>&1 || error "Failed while removing the git-svn-id"
 
 }
