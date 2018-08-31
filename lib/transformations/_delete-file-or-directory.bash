@@ -15,6 +15,6 @@ function delete-file-or-directory() {
   msg "Log file $logFile"
   if [[ -z $dryRun ]]
   then
-    git filter-branch -f --index-filter "git rm -r --cached --ignore-unmatch \"${fileName}\"" HEAD > $logFile 2>&1 || error "Filter execution failed"
+    git filter-branch -f --index-filter "git rm -r --ignore-unmatch \"${fileName}\"" --prune-empty -- --all > $logFile 2>&1 || error "Filter execution failed"
   fi
 }
