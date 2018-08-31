@@ -19,6 +19,8 @@ function configure() {
   GIT_SERVER_PROD=git.infra.abs.gov.au
   tempDir=/var/git/migration/git/script-temp-area
   
+  # By default minimise the url. This can be overriden by project configurations
+  NO_MINIMIZE_URL='true'
 
   # Git server url for DEV/PROD
   case $targetEnv in
@@ -38,11 +40,12 @@ function configure() {
   CONFIG_DIR=$scriptHome/config
   AUTHOR_FILES_DIR=$CONFIG_DIR/authors
   CONFIG_FILE=$CONFIG_DIR/${projectId}/${repoId}.conf
-  MIGRATION_JAR=$scriptHome/svn-migration-scripts.jar
+  MIGRATION_JAR=$scriptHome/lib/svn-migration-scripts.jar
   repoWorkDir=${tempDir}/${projectId}-${repoId}
+  svnWorkDir=${tempDir}/svn/${SVN_REPO}/${FOLDER_TRUNK}
 
   # Standardize the log file names
-  logDir=$scriptHome/logs
+  logDir=/var/git/migration/logs
   logFileWithPrefix="${logDir}/$(date '+%Y%m%d%H%M')-${projectId}-${repoId}"
 
   [[ -n $dryRun ]] && log "*** Running in DryRun Mode ***"
@@ -62,7 +65,7 @@ function configure() {
   repoDataDir=${DATA_DIR}/${SVN_REPO}/${FOLDER_TRUNK}
 
   # Create working directories
-  for workDir in $tempDir $DATA_DIR $logDir
+  for workDir in $tempDir $DATA_DIR $logDir $svnWorkDir
   do
     [[ -d $workDir ]] || mkdir -p $workDir
   done
