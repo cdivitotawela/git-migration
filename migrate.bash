@@ -6,6 +6,9 @@
 
 clear
 
+# Set umask so that any file folder created has permission 774
+umask 003
+
 # Locate the script home directory
 if [[ $(dirname $0) == "." ]]
 then
@@ -17,7 +20,10 @@ fi
 # Source library files
 for lib in $(find $scriptHome/lib -name _*.bash -type f)
 do
-  source $lib
+  source $lib || {
+    echo "ERRROR: Failed to load script library $lib"
+    exit 2
+  }
 done
 
 # Start message
@@ -33,9 +39,9 @@ Usage: $(basename $0) [OPTIONS]
   -b         Bitbucket project id
   -r         Bitbucket repository id
   -e         Environment DEV/PROD. Default to DEV
-  -i         Corp username
   -d         Dry run. Echo commands
   -c         Perform clean migration delting the existing clone
+  -p         Push the repository to remote
   -h         Display help
 EOM
   exit 0
@@ -60,17 +66,7 @@ do
       targetEnv=$OPTARG
       ;;
     p)
-      echo -n "Enter the password for user $corpUsername: "
-      read -s corpPassword
-      if [[ -z $corpPassword ]]
-      then
-        echo
-        error "Password empty. Cannot proceed"
-      fi
-      clear
-      ;;
-    i)
-      corpUsername=$OPTARG
+      pushRepo=true
       ;;
     d)
       dryRun="echo SIMULATE : "
@@ -113,6 +109,7 @@ case $operation in
   MIGRATE)
     clone
     prepare-work-repo
+    repo-analysis
     transform 
     push-remote
   ;;
