@@ -13,10 +13,10 @@ function configure() {
   stage "Configure Parameters"
 
   # These parameters specific to environment/deployment
-  SVN_SERVER=http://tsdcoderepository.corp.abs.gov.au/repos/abs-repos
+  SVN_SERVER=http://192.168.56.100/svn
   DATA_DIR=/var/git/migration/git/cloned-repos
-  GIT_SERVER_DEV=git-dev.infra.abs.gov.au
-  GIT_SERVER_PROD=git.infra.abs.gov.au
+  GIT_SERVER_DEV=192.168.56.100
+  GIT_SERVER_PROD=192.168.56.100
   tempDir=/var/git/migration/git/script-temp-area
   
   # By default minimise the url. This can be overriden by project configurations
