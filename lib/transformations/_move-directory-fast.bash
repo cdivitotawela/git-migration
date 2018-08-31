@@ -18,6 +18,6 @@ function move-directory-fast() {
   msg "Log file [$logFile]"
   if [[ -z $dryRun ]]
   then
-    eval "git filter-branch -f --index-filter 'git ls-files -s | sed \"s|${fromDir}|${toDir}|\" | GIT_INDEX_FILE=\"\$GIT_INDEX_FILE.new\" git update-index --index-info && [[ -f \"\$GIT_INDEX_FILE.new\" ]] && mv \"\$GIT_INDEX_FILE.new\" \"\$GIT_INDEX_FILE\" || echo "skip commit"' HEAD > $logFile 2>&1 || error \"Failed in transformation\"" 
+    eval "git filter-branch -f --index-filter 'git ls-files -s | sed \"s|${fromDir}|${toDir}|\" | GIT_INDEX_FILE=\"\$GIT_INDEX_FILE.new\" git update-index --index-info && [[ -f \"\$GIT_INDEX_FILE.new\" ]] && mv \"\$GIT_INDEX_FILE.new\" \"\$GIT_INDEX_FILE\" || echo "skip commit"' --prune-empty  HEAD > $logFile 2>&1 || error \"Failed in transformation\"" 
   fi
 }
