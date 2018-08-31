@@ -18,4 +18,3 @@ function move-to-sub-folder() {
     eval "git filter-branch --index-filter 'git ls-files -s | sed \"s-\t\\\"*-&${subFolder}/-\" | GIT_INDEX_FILE=\$GIT_INDEX_FILE.new git update-index --index-info &&  mv \"\$GIT_INDEX_FILE.new\" \"\$GIT_INDEX_FILE\"' HEAD >$logFile 2>&1 || error \"Error occurred performing transformation ${transform}\""
   fi
 }
-
