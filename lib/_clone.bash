@@ -52,6 +52,8 @@ function clone() {
     includePaths="--include-paths=$(echo "$includePaths" | sed "s/^|//g")"
   fi
 
+  # Configure --no-minimize-url
+  [[ $NO_MINIMIZE_URL == 'true' ]] && EXTRA_OPT="$EXTRA_OPT --no-minimize-url"
 
   # Delete existing folder if cleanMigration parameter set
   if [[ -z $dryRun ]]
@@ -76,7 +78,7 @@ function clone() {
     $dryRun git svn rebase >>$logFile 2>&1 || error "Git SVN rebase failed"
   else
     msg "Creating local Git repository"
-    $dryRun git svn clone $trunkFolder $branchFolders $tagFolders $includePaths --prefix "" --authors-file=$AUTHORS_FILE --no-minimize-url $startRevision "$SVN_REPO_URL" $repoDataDir >$logFile 2>&1 || error "SVN-Git clone failed"
+    $dryRun git svn clone $trunkFolder $branchFolders $tagFolders $includePaths --prefix "" --authors-file=$AUTHORS_FILE $EXTRA_OPT $startRevision "$SVN_REPO_URL" $repoDataDir >$logFile 2>&1 || error "SVN-Git clone failed"
   fi
 
   if [[ -z $dryRun ]]
@@ -87,6 +89,15 @@ function clone() {
     #       branches may get updates automatically.
 
     cd $repoDataDir || error "Error changing to $repoDataDir"
+
+    # Convert remote tags to local tags
+    for remoteTag in $(git for-each-ref --format='%(refname:short)' refs/remotes/tags)
+    do
+      if [[ $(git tag | egrep -c "^remoteTag$") -eq 0 ]]
+      then
+        git tag ${remoteTag/tags\//} $remoteTag && git branch -D -r $remoteTag && msg "Createg tag ${remoteTag/tags\//} and deleted $remoteTag" || error "Failed converting tags"
+      fi
+    done
 
     # Delete any local branches apart from master
     for localBranch in $(git branch --list | grep -v "master")
